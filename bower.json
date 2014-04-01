@@ -1,0 +1,13 @@
+{
+  "name": "seed",
+  "version": "0.0.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "components",
+    "public/components"
+  ],
+  "dependencies": {
+    "paper": "~0.9.17"
+  }
+}
