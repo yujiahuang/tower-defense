@@ -1,5 +1,9 @@
 extends layout
 
 block content
-  canvas#main(resize)
+  #wrapper(ng-controller="mapCtrl")
+    canvas#main(resize)
+    #pause(ng-click="togglePause()") ||
+  script
+    | var is_paused = false;
 

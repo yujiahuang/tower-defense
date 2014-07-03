@@ -1,0 +1,27 @@
+{
+  "royals": {
+
+    "infantry": {
+      "health": 1000,
+      "speed": 1,
+      "attack": 0,
+      "color": "#ffff00"
+    },
+    "cavalry": {
+      "health": 1000,
+      "speed": 1.5,
+      "attack": 0,
+      "color": "#ff0000"
+    }
+
+  },
+  "slaves": {
+
+    "slave": {
+      "health": 1000,
+      "attack": 1,
+      "range": 100
+    }
+
+  }
+}
