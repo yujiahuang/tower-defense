@@ -1,12 +1,14 @@
 app.controller('mapCtrl', function ($scope) {
 
-  // $scope.pause = false;
+  $scope.init = function(){
+
+    $scope.slaves = globals.data.slaves;
+    $scope.slave_names = Object.keys($scope.slaves);
+
+  }
   $scope.togglePause = function(){
 
-    // $scope.pause = !$scope.pause;
-    is_paused = !is_paused;
-    console.log(is_paused);
-    // togglePause();
+    globals.is_paused = !globals.is_paused;
 
   }
   

@@ -1,0 +1,11 @@
+app.directive('slave', function() {
+  return {
+    restrict: 'A',
+    link: function(scope, element, attrs){
+
+      element.css("background-color", attrs.color);
+      console.log(attrs);
+
+    }
+  };
+});

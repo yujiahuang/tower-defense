@@ -1,5 +1,3 @@
-var HOST_NAME = "http://localhost:32382";
-
 var HARDNESS = 2; // could be 0 to 5. 5 would generate a freaking straight road.
 
 var data;
@@ -21,7 +19,7 @@ function init(){
   path.smooth();
 
   // get data
-  getData();
+  data = globals.data;
 
   // generate royals
   randomRoyal();
@@ -34,15 +32,15 @@ function Royal (type) {
 
   var d = data['royals'][type];
   var appearance = new Path.Circle(path.getPointAt(0), 5);
-  appearance.fillColor = d['color'];
+  appearance.fillColor = d.color;
 
   // properties
   this.offset = 0;
-  this.health = d['health'];
+  this.health = d.health;
   this.appearance = appearance;
   this.center = appearance.position;
-  this.speed = d['speed'];
-  this.attack = d['attack'];
+  this.speed = d.speed;
+  this.attack = d.attack;
 
   // methods
   this.changePosition = function(new_position){
@@ -60,12 +58,13 @@ function Slave(type, position) {
   var range = d['range'];
   var outer_circle = new Path.Circle(position, range);
   var inner_circle = new Path.Circle(position, 5);
-  outer_circle.fillColor = new Color(178/255, 115/255, 37/255, 0.5);
-  inner_circle.fillColor = new Color(178/255, 115/255, 37/255, 1);
+  outer_circle.fillColor = d.color;
+  outer_circle.opacity = 0.5;
+  inner_circle.fillColor = d.color;
 
   // properties
-  this.attack = d['attack'];
-  this.health = d['health'];
+  this.attack = d.attack;
+  this.health = d.health;
   this.center = position;
   this.inner_circle = inner_circle;
   this.outer_circle = outer_circle;
@@ -94,7 +93,7 @@ function generatePoints(){
 
   var points = [];
   var n = 12 - HARDNESS*2; // how many points
-  var y_top = [HEIGHT*0.05, HEIGHT*0.45];
+  var y_top = [HEIGHT*0.05 + 40, HEIGHT*0.45]; // 40 is to leave space for toolbox
   var y_bottom = [HEIGHT*0.55, HEIGHT*0.95];
 
   // first one must be at x = 0. 60 is for hidding the beginning
@@ -143,14 +142,14 @@ function onResize(event) {
 
 function onFrame(event) {
  
-  if(!is_paused){
+  if(!globals.is_paused){
 
     var alive_royals = [];
     royals.forEach(function(r, i){
 
       r.offset += r.speed;
       r.changePosition(path.getPointAt(r.offset));
-      if(calcAttack(r) > 0){
+      if(calcAttack(r) > 0 && r.offset < path.length){
 
         alive_royals.push(r);
 
@@ -172,7 +171,7 @@ function randomRoyal(){
   var royal = new Royal(keys[r]);
   royals.push(royal);
 
-  window.setTimeout(randomRoyal, HARDNESS*2000);
+  window.setTimeout(randomRoyal, 18000/(HARDNESS+1));
 
 }
 
@@ -181,7 +180,7 @@ function randomRoyal(){
 
 function onMouseDown(event) {
 
-  if(!is_paused){
+  if(!globals.is_paused){
 
     var slave = new Slave('slave', event.point);
     slaves.push(slave);
@@ -191,7 +190,7 @@ function onMouseDown(event) {
 
 function onMouseDrag(event) {
   
-  if(!is_paused){
+  if(!globals.is_paused){
 
     var slave = slaves[slaves.length-1];
     slave.changePosition(event.point);
@@ -201,7 +200,7 @@ function onMouseDrag(event) {
 
 function onMouseUp(event) {
 
-  if(!is_paused){
+  if(!globals.is_paused){
 
     var slave = slaves[slaves.length-1];
     slave.hideOuterCircle();

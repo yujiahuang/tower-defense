@@ -28,15 +28,44 @@ canvas {
 
 }
 
+/*------- toolbox -------*/
+
+#toolbox {
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px 10px 0 0;
+
+}
+
+#toolbox > * {
+
+  float: right;
+
+}
+
 #pause {
 
   background: #77b121;
   padding: 10px 15px;
   border-radius: 5px;
-  position: absolute;
-  top: 10px;
-  right: 10px;
   color: #fff;
   cursor: pointer;
+  margin: 0 0 0 5px;
 
 }
+
+.slave {
+
+  border-radius: 50px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  margin: 3px 5px;
+
+}
+
+
+
+
