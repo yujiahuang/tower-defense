@@ -19,25 +19,25 @@
 
     "slave": {
       "health": 300,
-      "attack": 1,
+      "attack": 60,
       "range": 100,
       "color": "#b27325"
     },
     "shielded_slave": {
       "health": 1000,
-      "attack": 1,
+      "attack": 60,
       "range": 100,
       "color": "#999999"
     },
     "strong_slave": {
       "health": 500,
-      "attack": 1,
+      "attack": 60,
       "range": 150,
       "color": "#1999a8"
     },
     "Messiah": {
       "health": 3000,
-      "attack": 1,
+      "attack": 180,
       "range": 200,
       "color": "#d60039"
     }

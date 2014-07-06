@@ -1,4 +1,6 @@
 var HARDNESS = 2; // could be 0 to 5. 5 would generate a freaking straight road.
+var MAGIC_NUM = 32382;
+var remaining_slaves = globals.MAX_SLAVES;
 
 var data;
 var WIDTH = window.innerWidth;
@@ -6,6 +8,8 @@ var HEIGHT = window.innerHeight;
 var path;
 var royals = [];
 var slaves = [];
+var next_royal_frame = 0;
+var accumulator = 0;
 
 init();
 
@@ -20,9 +24,6 @@ function init(){
 
   // get data
   data = globals.data;
-
-  // generate royals
-  randomRoyal();
 
 }
 
@@ -69,6 +70,7 @@ function Slave(type, position) {
   this.inner_circle = inner_circle;
   this.outer_circle = outer_circle;
   this.range = range;
+  this.accumulator = 0;
 
   // methods
   this.changePosition = function(new_position){
@@ -82,10 +84,9 @@ function Slave(type, position) {
 
     this.outer_circle.visible = false;
 
-  }
+  };
 
 }
-
 
 /*------- generate path -------*/
 
@@ -93,7 +94,7 @@ function generatePoints(){
 
   var points = [];
   var n = 12 - HARDNESS*2; // how many points
-  var y_top = [HEIGHT*0.05 + 40, HEIGHT*0.45]; // 40 is to leave space for toolbox
+  var y_top = [HEIGHT*0.05 + 55, HEIGHT*0.45]; // 55 is to leave space for toolbox
   var y_bottom = [HEIGHT*0.55, HEIGHT*0.95];
 
   // first one must be at x = 0. 60 is for hidding the beginning
@@ -144,12 +145,24 @@ function onFrame(event) {
  
   if(!globals.is_paused){
 
+    // move royals and calculate royals' health
     var alive_royals = [];
     royals.forEach(function(r, i){
 
+      // move royals
       r.offset += r.speed;
       r.changePosition(path.getPointAt(r.offset));
-      if(calcAttack(r) > 0 && r.offset < path.length){
+
+      //
+      slaves.forEach(function(s, i){
+
+        s.accumulator++;
+        if(s.accumulator > 60) s.accumulator = 0;
+
+      });
+
+      // collect alive royals
+      if(calcAttack(r, i) > 0 && r.offset < path.length){
 
         alive_royals.push(r);
 
@@ -159,19 +172,29 @@ function onFrame(event) {
     royals = alive_royals;
     console.log(royals.length);
 
-  }
-  
+    // generate royals
+    if(accumulator == next_royal_frame){
+     
+      randomRoyal();
+      // 18 seconds with 60 fps
+      next_royal_frame = Math.floor(Math.random() * (18*60/(HARDNESS+1)) + 1);
+      accumulator = 0;
+
+    }
+    accumulator++;
+
+  }  
 }
 
 function randomRoyal(){
 
-  var keys = Object.keys(data['royals']);
+  var keys = Object.keys(data.royals);
   var r = Math.floor(Math.random() * keys.length);
 
   var royal = new Royal(keys[r]);
   royals.push(royal);
 
-  window.setTimeout(randomRoyal, 18000/(HARDNESS+1));
+  // window.setTimeout(randomRoyal, 18000/(HARDNESS+1));
 
 }
 
@@ -180,9 +203,9 @@ function randomRoyal(){
 
 function onMouseDown(event) {
 
-  if(!globals.is_paused){
+  if(!globals.is_paused && remaining_slaves > 0){
 
-    var slave = new Slave('slave', event.point);
+    var slave = new Slave(globals.current_slave, event.point);
     slaves.push(slave);
 
   }
@@ -190,7 +213,7 @@ function onMouseDown(event) {
 
 function onMouseDrag(event) {
   
-  if(!globals.is_paused){
+  if(!globals.is_paused && remaining_slaves > 0){
 
     var slave = slaves[slaves.length-1];
     slave.changePosition(event.point);
@@ -200,29 +223,50 @@ function onMouseDrag(event) {
 
 function onMouseUp(event) {
 
-  if(!globals.is_paused){
+  if(!globals.is_paused && remaining_slaves > 0){
 
     var slave = slaves[slaves.length-1];
     slave.hideOuterCircle();
+    remaining_slaves--;
+    globals.changeSlaveNum(remaining_slaves);
 
   }
 }
 
 /*------- calculate attack -------*/
 
-function calcAttack(royal){
+var test = false;
+
+function calcAttack(royal, index){
 
   var p = royal.center;
   var h = royal.health;
-  slaves.forEach(function(s){
+  var d_min = MAGIC_NUM;
+  var i_min = MAGIC_NUM;
+  if(slaves.length > 0){
 
-    if(s.center.getDistance(p) < s.range){
+    // find min
+    for(var i = 0; i < slaves.length; i++){
 
-      h = harmRoyal(royal, 1);
+      var d = slaves[i].center.getDistance(p);
+      var a = slaves[i].accumulator;
+      if(d < d_min && a == 0){
 
+        d_min = d;
+        i_min = i;
+
+      }
     }
 
-  });
+    if(i_min != MAGIC_NUM && d_min < slaves[i_min].range){// && slaves[i_min].accumulator == 0){
+
+      h = harmRoyal(royal, slaves[i_min].attack);
+      var future_royal = path.getPointAt(royal.offset + 20*royal.speed);
+      globals.attackAnimation(slaves[i_min].center, future_royal);
+
+    }
+  }
+  
   return h; // return the ramaining health of the royal
 
 }

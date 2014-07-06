@@ -66,6 +66,14 @@ canvas {
 
 }
 
+.attack {
 
+  width: 3px;
+  height: 3px;
+  border-radius: 10px;
+  background: #b27325;
+  position: absolute;
+
+}
 
 

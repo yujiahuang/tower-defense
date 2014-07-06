@@ -5,6 +5,8 @@ block content
     canvas#main(resize)
     #toolbox
       #pause(ng-click="togglePause()") ||
-      .slave(ng-repeat="s in slave_names" id="{{s}}" color="{{slaves[s]['color']}}" slave)
+      .slave(ng-repeat="s in slave_names" color="{{slaves[s]['color']}}" 
+             slave="{{s}}" ng-click="chooseSlave(s)")
+      #remaining_slave 5
   script
 

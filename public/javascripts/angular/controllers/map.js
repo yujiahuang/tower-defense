@@ -11,5 +11,10 @@ app.controller('mapCtrl', function ($scope) {
     globals.is_paused = !globals.is_paused;
 
   }
+  $scope.chooseSlave = function(s){
+
+    globals.current_slave = s;
+
+  }
   
 });
