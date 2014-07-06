@@ -2,8 +2,8 @@ window.globals = {};
 
 globals.is_paused = false;
 
-// globals.HOST_NAME = "http://localhost:32382";
-globals.HOST_NAME = "http://tower-defense-eecamp.herokuapp.com";
+globals.HOST_NAME = "http://localhost:32382";
+// globals.HOST_NAME = "http://tower-defense-eecamp.herokuapp.com";
 globals.getData = function (){
 
   var req = null;
