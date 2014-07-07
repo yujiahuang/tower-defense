@@ -19,8 +19,8 @@ globals.data = globals.getData();
 globals.current_slave = 'slave';
 
 globals.MAX_SLAVES = 5;
-globals.changeSlaveNum = function(n){
-  document.getElementById('remaining_slave').innerHTML = n;
+globals.changeBreadNum = function(n){
+  document.getElementById('bread').innerHTML = n;
 }
 
 globals.attackAnimation = function(from, to){

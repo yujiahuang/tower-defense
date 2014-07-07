@@ -5,13 +5,15 @@
       "health": 1000,
       "speed": 1,
       "attack": 0,
-      "color": "#ffff00"
+      "color": "#ffff00",
+      "bread_range": [0, 4]
     },
     "cavalry": {
       "health": 1000,
       "speed": 1.5,
       "attack": 0,
-      "color": "#ff0000"
+      "color": "#ff0000",
+      "bread_range": [0, 8]
     }
 
   },
@@ -19,28 +21,35 @@
 
     "slave": {
       "health": 300,
-      "attack": 60,
+      "attack": 50,
       "range": 100,
-      "color": "#b27325"
+      "color": "#b27325",
+      "bread": 12
     },
     "shielded_slave": {
       "health": 1000,
-      "attack": 60,
+      "attack": 50,
       "range": 100,
-      "color": "#999999"
+      "color": "#999999",
+      "bread": 25
     },
     "strong_slave": {
       "health": 500,
-      "attack": 60,
+      "attack": 50,
       "range": 150,
-      "color": "#1999a8"
+      "color": "#1999a8",
+      "bread": 25
     },
     "Messiah": {
       "health": 3000,
-      "attack": 180,
+      "attack": 200,
       "range": 200,
-      "color": "#d60039"
+      "color": "#d60039",
+      "bread": 50
     }
 
-  }  
+  },
+  "resources": {
+    "bread": 60
+  }
 }

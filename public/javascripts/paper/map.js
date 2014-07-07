@@ -1,6 +1,5 @@
 var HARDNESS = 2; // could be 0 to 5. 5 would generate a freaking straight road.
 var MAGIC_NUM = 32382;
-var remaining_slaves = globals.MAX_SLAVES;
 
 var data;
 var WIDTH = window.innerWidth;
@@ -8,8 +7,11 @@ var HEIGHT = window.innerHeight;
 var path;
 var royals = [];
 var slaves = [];
+var dying_royals = [];
 var next_royal_frame = 0;
 var accumulator = 0;
+
+var bread = globals.data.resources.bread;
 
 init();
 
@@ -42,13 +44,15 @@ function Royal (type) {
   this.center = appearance.position;
   this.speed = d.speed;
   this.attack = d.attack;
+  this.type = type;
+  this.death_count_down = 30;
 
   // methods
-  this.changePosition = function(new_position){
-
+  this.move = function(){
+    this.offset += this.speed;
+    var new_position = path.getPointAt(this.offset);
     this.center = new_position;
     this.appearance.position = new_position;
-
   };
 
 }
@@ -70,7 +74,8 @@ function Slave(type, position) {
   this.inner_circle = inner_circle;
   this.outer_circle = outer_circle;
   this.range = range;
-  this.accumulator = 0;
+  this.accumulator = 1;
+  this.can_attack = false;
 
   // methods
   this.changePosition = function(new_position){
@@ -145,32 +150,50 @@ function onFrame(event) {
  
   if(!globals.is_paused){
 
+    // move dying royals
+    var not_yet_heaven = [];
+    dying_royals.forEach(function(r, i){
+
+      r.move();
+      r.death_count_down--;
+      if(r.death_count_down >　0) not_yet_heaven.push(r);
+
+    });
+    dying_royals = not_yet_heaven;
+
     // move royals and calculate royals' health
     var alive_royals = [];
     royals.forEach(function(r, i){
 
       // move royals
-      r.offset += r.speed;
-      r.changePosition(path.getPointAt(r.offset));
+      r.move();
 
-      //
+      // increment accumulator
       slaves.forEach(function(s, i){
 
-        s.accumulator++;
+        if(s.can_attack) s.accumulator++;
         if(s.accumulator > 60) s.accumulator = 0;
 
       });
 
       // collect alive royals
-      if(calcAttack(r, i) > 0 && r.offset < path.length){
+      if(calcAttack(r, i) > 0){
 
-        alive_royals.push(r);
+        if(r.offset < path.length) alive_royals.push(r);
+
+      }
+      else {
+
+        dying_royals.push(r);
+        var range = data.royals[r.type].bread_range;
+        bread += Math.floor(Math.random() * range[1] + range[0]);
+        globals.changeBreadNum(bread);
 
       }
 
     });
     royals = alive_royals;
-    console.log(royals.length);
+    console.log("alive: " +　royals.length);
 
     // generate royals
     if(accumulator == next_royal_frame){
@@ -203,7 +226,8 @@ function randomRoyal(){
 
 function onMouseDown(event) {
 
-  if(!globals.is_paused && remaining_slaves > 0){
+  var bread_needed = data.slaves[globals.current_slave].bread;
+  if(!globals.is_paused && bread >= bread_needed){
 
     var slave = new Slave(globals.current_slave, event.point);
     slaves.push(slave);
@@ -213,7 +237,8 @@ function onMouseDown(event) {
 
 function onMouseDrag(event) {
   
-  if(!globals.is_paused && remaining_slaves > 0){
+  var bread_needed = data.slaves[globals.current_slave].bread;
+  if(!globals.is_paused && bread >= bread_needed){
 
     var slave = slaves[slaves.length-1];
     slave.changePosition(event.point);
@@ -223,12 +248,14 @@ function onMouseDrag(event) {
 
 function onMouseUp(event) {
 
-  if(!globals.is_paused && remaining_slaves > 0){
+  var bread_needed = data.slaves[globals.current_slave].bread;
+  if(!globals.is_paused && bread >= bread_needed){
 
     var slave = slaves[slaves.length-1];
+    slave.can_attack = true;
     slave.hideOuterCircle();
-    remaining_slaves--;
-    globals.changeSlaveNum(remaining_slaves);
+    bread -= bread_needed;
+    globals.changeBreadNum(bread);
 
   }
 }
@@ -258,7 +285,7 @@ function calcAttack(royal, index){
       }
     }
 
-    if(i_min != MAGIC_NUM && d_min < slaves[i_min].range){// && slaves[i_min].accumulator == 0){
+    if(i_min != MAGIC_NUM && d_min < slaves[i_min].range){
 
       h = harmRoyal(royal, slaves[i_min].attack);
       var future_royal = path.getPointAt(royal.offset + 20*royal.speed);
@@ -276,7 +303,11 @@ function harmRoyal(royal, harm){ // return the ramaining health of the royal
   if(royal.health > 0){
 
     royal.health-=harm;
-    royal.appearance.fillColor.brightness = royal.health/1000;
+    if(royal.health < 0) royal.health = 0;
+    window.setTimeout(function(){
+      if(royal.health > 0) royal.appearance.opacity = royal.health*0.8/1000 + 0.2;
+      else royal.appearance.opacity = 0;
+    }, 500); // wait for the attack animation
     return royal.health;
     
   }
