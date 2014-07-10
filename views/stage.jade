@@ -1,0 +1,14 @@
+extends layout
+
+block content
+  #wrapper(ng-controller="stageCtrl" ng-init="init()")
+    .choose_team(ng-show='choosing_team')
+      .navbar
+        div 選擇你的小隊：
+      .button(ng-repeat='c in colors' ng-click='chooseTeam($index+1)' color="{{c}}" button)
+        div(ng-bind='$index+1')
+    .choose_stage(ng-show='!choosing_team')
+      .navbar
+        div 選擇要挑戰的關卡：
+      .button(ng-repeat='c in colors' ng-click='chooseStage($index+1)' color="{{c}}" button)
+        div(ng-bind='$index+1')

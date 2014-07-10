@@ -22,6 +22,9 @@ globals.MAX_SLAVES = 5;
 globals.changeBreadNum = function(n){
   document.getElementById('bread').innerHTML = n;
 }
+globals.changeRoyalPassed = function(n){
+  document.getElementById('royals_passed').innerHTML = n;
+}
 
 globals.attackAnimation = function(from, to){
   
@@ -38,6 +41,29 @@ globals.attackAnimation = function(from, to){
   }, 500, "linear", function(){
     this.remove();
   });
+
+}
+
+globals.showResult = function(is_win){
+
+  globals.is_paused = true;
+  if(is_win){
+
+    $.post("/win", {
+      team: this.data.stage_data.team, 
+      stage: this.data.stage_data.stage
+    }, function(data){
+      $("#result .info").html("任務成功");
+      $("#result .reward").html("你得到的密碼片段：" +　data);
+      $("#result").show();
+    });
+
+  }
+  else {
+
+    $("#result").show();
+
+  }
 
 }
 

@@ -1,0 +1,44 @@
+extends layout
+
+block content
+  #result
+    .bg
+    .content
+      .content_wrapper
+        .info 任務失敗
+        .reward
+        a(href="/") 重新挑戰
+  #wrapper(ng-controller="mapCtrl" ng-init="init()")
+    canvas#main(resize)
+    #toolbox
+      #pause(ng-click="togglePause($event)" icon='pause')
+      #slaves
+        .slave(ng-repeat="s in slave_names" color="{{slaves[s].color}}" 
+               slave="{{s}}" ng-click="chooseSlave(s, $index)"
+               ng-bind="slaves[s].bread"
+               ng-class="{chosen: current_slave==$index}")
+          .description
+            ul
+              li 攻擊傷害 {{slaves[s].attack}}
+              li 攻擊範圍 {{slaves[s].range}}
+              li 麵包需求 {{slaves[s].bread}}
+      #bread
+      #royals
+        #title 貴族列表
+        #royals_passed 0
+        .royal(ng-repeat="r in royal_names" color="{{royals[r].color}}" 
+               royal="{{r}}")
+          .description
+            ul
+              li 初始血量 {{royals[r].health}}
+              li 移動速度 {{royals[r].speed}}x
+
+  // global
+  script(type="text/javascript" src="/javascripts/global.js")
+  script
+    | globals.changeBreadNum(globals.data.info.bread);
+
+  // paper
+  script(type="text/javascript" src="/components/paper/dist/paper.js")
+  script(type="text/paperscript" src="/javascripts/paper/map.js" canvas="main")
+

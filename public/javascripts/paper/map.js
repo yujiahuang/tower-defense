@@ -1,5 +1,9 @@
-var HARDNESS = 2; // could be 0 to 5. 5 would generate a freaking straight road.
+var HARDNESS = globals.data.info.hardness;
+// could be 0 to 5. 5 would generate a freaking straight road.
 var MAGIC_NUM = 32382;
+var ROYALS_ALLOWED = 5;
+// var TOTAL_ROYALS = 10 + 5 * HARDNESS;
+var TOTAL_ROYALS = 1;
 
 var data;
 var WIDTH = window.innerWidth;
@@ -10,8 +14,10 @@ var slaves = [];
 var dying_royals = [];
 var next_royal_frame = 0;
 var accumulator = 0;
+var royal_passed = 0;
+var remaining_royals = TOTAL_ROYALS;
 
-var bread = globals.data.resources.bread;
+var bread = globals.data.info.bread;
 
 init();
 
@@ -99,7 +105,7 @@ function generatePoints(){
 
   var points = [];
   var n = 12 - HARDNESS*2; // how many points
-  var y_top = [HEIGHT*0.05 + 55, HEIGHT*0.45]; // 55 is to leave space for toolbox
+  var y_top = [HEIGHT*0.05 + 86, HEIGHT*0.45]; // add a constant to leave space for toolbox
   var y_bottom = [HEIGHT*0.55, HEIGHT*0.95];
 
   // first one must be at x = 0. 60 is for hidding the beginning
@@ -142,8 +148,8 @@ function getData(){
 /*------- generate royals -------*/
 
 function onResize(event) {
-  // Whenever the window is resized, recenter the path:
-  // path.position = view.center;
+
+
 }
 
 function onFrame(event) {
@@ -180,6 +186,14 @@ function onFrame(event) {
       if(calcAttack(r, i) > 0){
 
         if(r.offset < path.length) alive_royals.push(r);
+        else {
+
+          r.appearance.opacity = 0;
+          royal_passed++;
+          globals.changeRoyalPassed(royal_passed);
+          if(royal_passed >= ROYALS_ALLOWED) lose();
+
+        }
 
       }
       else {
@@ -196,15 +210,24 @@ function onFrame(event) {
     console.log("alive: " +　royals.length);
 
     // generate royals
-    if(accumulator == next_royal_frame){
-     
-      randomRoyal();
-      // 18 seconds with 60 fps
-      next_royal_frame = Math.floor(Math.random() * (18*60/(HARDNESS+1)) + 1);
-      accumulator = 0;
+    if(remaining_royals > 0){
+
+      if(accumulator == next_royal_frame){
+
+        randomRoyal();
+        // 18 seconds with 60 fps
+        next_royal_frame = Math.floor(Math.random() * (18*60/(HARDNESS+1)) + 1);
+        accumulator = 0;
+
+        remaining_royals--;
+
+      }
+      accumulator++;
 
     }
-    accumulator++;
+
+    // check for win
+    if(dying_royals.length == 0 && royals.length == 0) win();
 
   }  
 }
@@ -217,7 +240,6 @@ function randomRoyal(){
   var royal = new Royal(keys[r]);
   royals.push(royal);
 
-  // window.setTimeout(randomRoyal, 18000/(HARDNESS+1));
 
 }
 
@@ -319,10 +341,21 @@ function harmRoyal(royal, harm){ // return the ramaining health of the royal
 
 }
 
+/*------- win/lose -------*/
 
+function lose(){
 
+  console.log("You lose.");
+  globals.showResult(false);
 
+}
 
+function win(){
+
+  console.log("You win.");
+  globals.showResult(true);
+
+}
 
 
 

@@ -5,14 +5,14 @@
       "health": 1000,
       "speed": 1,
       "attack": 0,
-      "color": "#ffff00",
+      "color": "#e5b300",
       "bread_range": [0, 4]
     },
     "cavalry": {
       "health": 1000,
       "speed": 1.5,
       "attack": 0,
-      "color": "#ff0000",
+      "color": "#d11f1f",
       "bread_range": [0, 8]
     }
 
@@ -49,7 +49,7 @@
     }
 
   },
-  "resources": {
+  "info": {
     "bread": 60
   }
 }
