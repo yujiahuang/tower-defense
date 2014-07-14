@@ -2,8 +2,7 @@ var HARDNESS = globals.data.info.hardness;
 // could be 0 to 5. 5 would generate a freaking straight road.
 var MAGIC_NUM = 32382;
 var ROYALS_ALLOWED = 5;
-// var TOTAL_ROYALS = 10 + 5 * HARDNESS;
-var TOTAL_ROYALS = 1;
+var TOTAL_ROYALS = 10 + 5 * HARDNESS;
 
 var data;
 var WIDTH = window.innerWidth;
@@ -103,6 +102,12 @@ function Slave(type, position) {
 
 function generatePoints(){
 
+  return randomPoints();
+
+};
+
+function randomPoints(){
+
   var points = [];
   var n = 12 - HARDNESS*2; // how many points
   var y_top = [HEIGHT*0.05 + 86, HEIGHT*0.45]; // add a constant to leave space for toolbox
@@ -129,7 +134,7 @@ function generatePoints(){
 
   return points;
 
-};
+}
 
 /*------- GET data -------*/
 
@@ -234,15 +239,32 @@ function onFrame(event) {
 
 function randomRoyal(){
 
-  var keys = Object.keys(data.royals);
-  var r = Math.floor(Math.random() * keys.length);
+  // var keys = Object.keys(data.royals);
+  var weighted_keys = getWeightedRoyals(data.royals);
+  var r = Math.floor(Math.random() * weighted_keys.length);
 
-  var royal = new Royal(keys[r]);
+  var royal = new Royal(weighted_keys[r]);
+  console.log(weighted_keys[r]);
   royals.push(royal);
-
 
 }
 
+function getWeightedRoyals(hash){
+
+  var weighted = [];
+  for(var key in hash){
+
+    for(var i = 0; i < hash[key].probability_weight; i++){
+
+      weighted.push(key);
+
+    }
+  }
+  console.log(weighted);
+
+  return weighted;
+
+}
 
 /*------- define slaves -------*/
 

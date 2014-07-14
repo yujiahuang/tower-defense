@@ -15,21 +15,23 @@ block content
       #slaves
         .slave(ng-repeat="s in slave_names" color="{{slaves[s].color}}" 
                slave="{{s}}" ng-click="chooseSlave(s, $index)"
-               ng-bind="slaves[s].bread"
                ng-class="{chosen: current_slave==$index}")
+          {{slaves[s].bread}}
           .description
             ul
+              li.name {{slaves[s].translate}}
               li 攻擊傷害 {{slaves[s].attack}}
               li 攻擊範圍 {{slaves[s].range}}
               li 麵包需求 {{slaves[s].bread}}
       #bread
       #royals
         #title 貴族列表
-        #royals_passed 0
+        #royals_passed 0/5
         .royal(ng-repeat="r in royal_names" color="{{royals[r].color}}" 
                royal="{{r}}")
           .description
             ul
+              li.name {{royals[r].translate}}
               li 初始血量 {{royals[r].health}}
               li 移動速度 {{royals[r].speed}}x
 

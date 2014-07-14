@@ -23,7 +23,7 @@ globals.changeBreadNum = function(n){
   document.getElementById('bread').innerHTML = n;
 }
 globals.changeRoyalPassed = function(n){
-  document.getElementById('royals_passed').innerHTML = n;
+  document.getElementById('royals_passed').innerHTML = n + "/5";
 }
 
 globals.attackAnimation = function(from, to){
