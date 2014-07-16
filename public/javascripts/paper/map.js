@@ -232,7 +232,7 @@ function onFrame(event) {
     }
 
     // check for win
-    if(dying_royals.length == 0 && royals.length == 0) win();
+    if(dying_royals.length == 0 && royals.length == 0 && remaining_royals == 0) win();
 
   }  
 }
